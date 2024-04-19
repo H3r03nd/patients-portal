@@ -2,7 +2,7 @@
 
 from flask import Flask, request, jsonify
 from patient_db import PatientDB
-
+from patient import Patient
 
 class PatientAPIController:
     def __init__(self):
@@ -34,7 +34,7 @@ class PatientAPIController:
 
     def create_patient(self):
         data = request.json
-
+        
         patient = self.patient_db.insert_patient(data)
         if patient is not None:
             return jsonify(data), 200
