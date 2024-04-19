@@ -21,6 +21,7 @@ import requests
 from datetime import datetime
 from config import DOCTORS, GENDERS, WARD_NUMBERS, ROOM_NUMBERS, API_CONTROLLER_URL
 from patient_db_config import PATIENTS_TABLE, ENGINE
+from patient_db import PatientDB
 class Patient:
     def __init__(self, name, gender, age):
         self.patient_id = str(uuid.uuid4())
