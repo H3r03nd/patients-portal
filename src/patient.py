@@ -33,6 +33,25 @@ class Patient:
         self.ward = None
         self.room = None
         self.validate_initial_arguments()
+        self.commit_to_db()
+        
+    def set_room(self, room):
+        self.room = room
+
+    def set_ward(self, ward):
+        self.ward = ward
+
+    def get_id(self):
+        return self.patient_id
+
+    def get_name(self):
+        return self.name
+
+    def get_room(self):
+        return self.room
+
+    def get_ward(self):
+        return self.ward
 
     def validate_initial_arguments(self):
         if self.name is None or type(self.name) != str:
@@ -42,18 +61,20 @@ class Patient:
         if not isinstance(self.age, int) or self.age <= 0:
             raise ValueError("Invalid age")
 
-    def update_room_and_ward(self, ward, room):
-        if ward in WARD_NUMBERS and room in ROOM_NUMBERS[ward]:
-            self.ward = ward
-            self.room = room
+    def commit(self): 
+        if self.ward in WARD_NUMBERS and str(self.room) in ROOM_NUMBERS[self.ward]:
+            pass
         else:
             raise ValueError("Invalid ward or room number")
         data = {
-            "ward": self.ward,
-            "room": self.room
+            "patient_ward": self.ward,
+            "patient_room": self.room
         }
         response = requests.put(f"{API_CONTROLLER_URL}/patient/{self.patient_id}", json=data)
-
+        if response.status_code != 200:
+            raise Exception("Failed to commit patient to database")
+        return response.json()
+    
     def commit_to_db(self):
         data = {
             "patient_id": self.patient_id,
@@ -64,8 +85,8 @@ class Patient:
             "patient_checkout": self.checkout,
             "patient_ward": self.ward,
             "patient_room": self.room,
-        }
+        }   
         response = requests.post(f"{API_CONTROLLER_URL}/patients", json=data)
-        if response.status_code != 201:
+        if response.status_code != 200:
             raise Exception("Failed to commit patient to database")
         return response.json()
